@@ -1,5 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {createServer}=require('../server.cjs');const docs=path.resolve(__dirname,'../docs');
+test('static control IDs are unique so upload, evidence and view switching target one element',()=>{
+ const html=fs.readFileSync(path.join(docs,'index.html'),'utf8'),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
+});
 test('public package contains code, license and fictional TXT only',()=>{
  const files=[];function walk(dir){for(const d of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,d.name);if(d.isDirectory())walk(p);else files.push(p);}}walk(docs);
  for(const file of files){assert.match(file,/\.(?:html|css|js|md|txt)$|\.nojekyll$/);const text=fs.readFileSync(file,'utf8');assert.doesNotMatch(text,/(?:C:\\Users\\|\/mnt\/[a-z]\/)/);if(file.endsWith('.txt'))assert.match(text,/FICTIONAL/);}

@@ -57,8 +57,9 @@
       }
     });
     const demo = meta.Scope === '01-only';
-    const expected = demo ? ['01'] : ['01', '02', '03', '04', '05', '06', '07', '08'];
-    if (meta.Scope && !['01-only', '01-08'].includes(meta.Scope)) warnings.push('알 수 없는 Scope입니다. 기본 01~08 양식으로 확인합니다.');
+    const singleScope = /^0[1-8]-only$/.test(meta.Scope || '');
+    const expected = singleScope ? [meta.Scope.slice(0, 2)] : ['01', '02', '03', '04', '05', '06', '07', '08'];
+    if (meta.Scope && !singleScope && meta.Scope !== '01-08') warnings.push('알 수 없는 Scope입니다. 기본 01~08 양식으로 확인합니다.');
     const counts = { GOOD: 0, BAD: 0, CHECK: 0, SKIP: 0, TOTAL: 0 };
     const occurrences = new Map();
     sections.forEach(s => occurrences.set(s.id, (occurrences.get(s.id) || 0) + 1));
@@ -82,7 +83,7 @@
     const summary = summaries.length === 1 ? summaries[0] : null;
     if (summary && Object.values(summary.counts).some(n => !Number.isSafeInteger(n))) warnings.push('SUMMARY의 숫자가 유효한 정수 범위를 벗어났습니다.');
     if (summary && Object.keys(counts).some(k => counts[k] !== summary.counts[k])) warnings.push('읽은 주 RESULT 집계와 TXT의 SUMMARY가 다릅니다.');
-    return { raw, sections, meta, counts, summary, ended, demo, warnings, recognized: sections.length > 0 };
+    return { raw, sections, meta, counts, summary, ended, demo, expected, singleScope, warnings, recognized: sections.length > 0 };
   }
   function review01(report) {
     const found = report.sections.filter(s => s.id === '01');

@@ -5,6 +5,28 @@ const D=require('../docs/core.js'),S=require('../docs/scripts.js'),C=require('..
 const actual=fs.readFileSync(path.resolve(__dirname,'../docs/samples/fictional-01-08.txt'),'utf8');
 const report=D.parseReport(actual);
 const detailStates=review=>review.details.map(r=>r.text.match(/:\s*(GOOD|BAD|CHECK|SKIP)\b/)[1]);
+test('all-item review preserves order, original main/detail states and evidence lines',()=>{
+ const items=R.reviewAll(report);assert.deepEqual(items.map(i=>i.id),S.ids);
+ assert.deepEqual(items.map(i=>i.review.status),['BAD','GOOD','GOOD','GOOD','CHECK','GOOD','BAD','BAD']);
+ for(const item of items){assert.equal(item.main.length,1);for(const line of [...item.main,...item.details,...item.review.evidence])assert.equal(report.raw.split('\n')[line.line-1],line.text);assert.ok(item.next.command);}
+ assert.deepEqual(detailStates({details:items[6].details}),['BAD','BAD']);assert.deepEqual(detailStates({details:items[7].details}),['GOOD','BAD']);
+ assert.deepEqual(report.counts,{GOOD:4,BAD:3,CHECK:1,SKIP:0,TOTAL:8});
+});
+test('explicit single-item Scope 01 through 08 reviews one item without false missing-item warnings',()=>{
+ for(const id of S.ids){const p=D.parseReport(R.sample(id,'BAD'));assert.deepEqual(p.expected,[id]);assert.equal(p.singleScope,true);assert.deepEqual(p.warnings,[]);assert.equal(p.counts.TOTAL,1);const items=R.reviewAll(p);assert.deepEqual(items.map(i=>i.id),[id]);assert.equal(items[0].review.status,'BAD');}
+});
+test('all-item review keeps missing, duplicate and invalid main RESULT unconfirmed',()=>{
+ const block=actual.match(/========== \[07\][\s\S]*?(?=========== \[08\])/)[0];
+ const invalid=actual.replace('RESULT: BAD -- Fictional 07 sample','RESULT: SAFE -- Fictional 07 sample');assert.notEqual(invalid,actual);
+ for(const broken of [actual.replace(block,''),actual.replace(block,block+block),invalid]){
+  const p=D.parseReport(broken),item=R.reviewAll(p).find(i=>i.id==='07');assert.equal(item.review.status,null);assert.equal(p.counts.TOTAL,7);assert.ok(p.warnings.length);assert.equal(R.reviewAll(p).length,8);
+ }
+});
+test('single Scope never adopts an out-of-scope section; unknown Scope keeps full expected coverage',()=>{
+ const input=R.sample('02','GOOD').replace('========== SUMMARY','========== [01] unexpected ==========\nRESULT: BAD\n========== SUMMARY'),p=D.parseReport(input);
+ assert.deepEqual(R.reviewAll(p).map(i=>i.id),['02']);assert.equal(p.counts.TOTAL,1);assert.match(p.warnings.join(' '),/범위 밖/);
+ const unknown=D.parseReport(R.sample('02','GOOD').replace('Scope: 02-only','Scope: 09-only'));assert.deepEqual(unknown.expected,S.ids);assert.match(unknown.warnings.join(' '),/알 수 없는 Scope/);
+});
 test('fictional eight-part report: states, line evidence and independent details',()=>{
  assert.deepEqual(S.ids.map(id=>R.review(report,id).status),['BAD','GOOD','GOOD','GOOD','CHECK','GOOD','BAD','BAD']);
  for(const id of S.ids){const r=R.review(report,id);assert.ok(r.evidence.length,id);for(const e of r.evidence)assert.equal(report.raw.split('\n')[e.line-1],e.text);}

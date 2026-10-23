@@ -61,7 +61,13 @@
   };
   const recorded=status==='INSUFFICIENT'?'BAD':status;
   const evidence=status==='INSUFFICIENT'?'':status==='CHECK'?'QUERY_ERROR: input could not be confirmed (fictional)':status==='SKIP'?'FILE_STATUS: required input missing (fictional)':row[id];
-  return `[Report 1] FICTIONAL item sample\nScope: 01-08\n========== [${id}] ${C[id].title} ==========\n${evidence}\nRESULT: ${recorded} -- Fictional ${id} sample\n========== SUMMARY ==========\n${D.STATES.map(s=>s+'='+(s===recorded?1:0)).join(' ')} TOTAL=1\n[END]\n`;
+  return `[Report 1] FICTIONAL item sample\nScope: ${id}-only\n========== [${id}] ${C[id].title} ==========\n${evidence}\nRESULT: ${recorded} -- Fictional ${id} sample\n========== SUMMARY ==========\n${D.STATES.map(s=>s+'='+(s===recorded?1:0)).join(' ')} TOTAL=1\n[END]\n`;
  }
- return {review,next,sample};
+ function reviewAll(report){
+  return report.expected.map(id=>{
+   const result=review(report,id),sections=report.sections.filter(s=>s.id===id);
+   return {id,title:C[id].title,review:result,next:next(result,id),main:sections.flatMap(s=>s.lines.filter(r=>/^RESULT\s*:/.test(r.text))),details:sections.flatMap(s=>s.details)};
+  });
+ }
+ return {review,next,sample,reviewAll};
 });

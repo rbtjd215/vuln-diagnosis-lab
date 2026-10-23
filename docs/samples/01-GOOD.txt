@@ -1,0 +1,9 @@
+[Report 1] FICTIONAL learning sample
+Version: demo fixture
+Scope: 01-only
+========== [01] Default account check ==========
+MATCH_COUNT=0
+RESULT: GOOD -- Fictional sample
+========== SUMMARY ==========
+GOOD=1 BAD=0 CHECK=0 SKIP=0 TOTAL=1
+[END]

@@ -1,0 +1,41 @@
+[Report 1] FICTIONAL EDUCATIONAL SAMPLE - NOT A REAL HOST
+Version: public fictional fixture v1
+Scope: 01-08
+User: student
+========== [01] Default account check ==========
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+MATCH_COUNT=1
+RESULT: BAD -- Fictional sample
+========== [02] root 권한 관리 ==========
+root -> UID=0
+RESULT: GOOD -- Fictional 02 sample
+========== [03] passwd 파일 권한 ==========
+-rw-r--r--. 1 root root 2000 Jan 1 12:00 /etc/passwd
+RESULT: GOOD -- Fictional 03 sample
+========== [04] group 파일 권한 ==========
+-rw-r--r--. 1 root root 500 Jan 1 12:00 /etc/group
+RESULT: GOOD -- Fictional 04 sample
+========== [05] 패스워드 사용규칙 ==========
+PASS_MAX_DAYS 70
+PASS_MIN_DAYS 7
+PASS_MIN_LEN: CHECK -- fictional missing key
+PASS_MAX_DAYS: GOOD
+PASS_MIN_DAYS: GOOD
+RESULT: CHECK -- Fictional 05 sample
+========== [06] Shell 제한 ==========
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+RESULT: GOOD -- Fictional 06 sample
+========== [07] su 제한 ==========
+#auth required pam_wheel.so use_uid
+wheel:x:10:
+PAM RESULT: BAD
+WHEEL RESULT: BAD
+RESULT: BAD -- Fictional 07 sample
+========== [08] shadow 파일 권한 ==========
+----------. 1 root root 1000 Jan 1 12:00 /etc/shadow
+PRACTICE RESULT: GOOD
+TEXTBOOK RESULT: BAD
+RESULT: BAD -- Fictional 08 sample
+========== SUMMARY ==========
+GOOD=4 BAD=3 CHECK=1 SKIP=0 TOTAL=8
+[END]

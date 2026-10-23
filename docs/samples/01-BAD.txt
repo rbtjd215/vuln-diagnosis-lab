@@ -1,0 +1,10 @@
+[Report 1] FICTIONAL learning sample
+Version: demo fixture
+Scope: 01-only
+========== [01] Default account check ==========
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+MATCH_COUNT=1
+RESULT: BAD -- Fictional sample
+========== SUMMARY ==========
+GOOD=0 BAD=1 CHECK=0 SKIP=0 TOTAL=1
+[END]

@@ -22,7 +22,7 @@
   const warnings=[];
   if(!evidence.length)warnings.push('조회 원문 근거 부족 · 구체적인 원인 미확인. RESULT 사유나 상세 상태만으로 입력값을 복원하지 않습니다.');
   if(errors.length)warnings.push('오류·파일 상태 원문이 있습니다. 기록된 상태를 바꾸지 않고 실제 조회 성공 여부를 별도로 확인합니다.');
-  if(id==='03'||id==='04')warnings.push('권한 패턴 검사와 교안의 소유자 기준은 다릅니다. ls에 보이는 소유자는 자동 판정에 포함된 것으로 해석하지 않습니다.');
+  if(id==='03'||id==='04')warnings.push('권한 패턴 검사와 파일 소유자 기준은 다릅니다. ls에 보이는 소유자는 자동 판정에 포함된 것으로 해석하지 않습니다.');
   const details=section.details;
   if(id==='05'){
    const keys=['PASS_MIN_LEN','PASS_MAX_DAYS','PASS_MIN_DAYS'];
@@ -31,7 +31,7 @@
     if(found.length!==1)warnings.push(`${key} 상세 상태가 없거나 중복입니다. 세 검사 완료를 확정하지 않습니다.`);
    }
    const min=evidence.map(r=>r.text.match(/^\s*PASS_MIN_DAYS\s+(\d+)\s*$/i)).filter(Boolean);
-   if(min.length===1&&Number(min[0][1])>=1&&Number(min[0][1])<=6)warnings.push('기록된 최소 사용 기간은 1–6일입니다. >0 예제의 GOOD와 교안의 7일 이상 기준은 다릅니다. 원문 상태는 보존합니다.');
+   if(min.length===1&&Number(min[0][1])>=1&&Number(min[0][1])<=6)warnings.push('기록된 최소 사용 기간은 1–6일입니다. >0 예제의 GOOD와 보안기준 7일 이상은 다릅니다. 원문 상태는 보존합니다.');
    warnings.push('한 설정의 누락·CHECK는 전체 암호 정책 부재를 뜻하지 않습니다. 시험 기준은 8자·70일·7일입니다.');
   }
   if(id==='06')warnings.push('행 전체 문자열 필터입니다. 마지막 Shell 필드·실제 로그인 동작·모든 계정을 검사했다고 확장하지 않습니다.');
@@ -46,7 +46,7 @@
   if(id==='01')return D.next01(result);
   const c=C[id];
   const action={GOOD:'GOOD가 확인한 조건과 미검사 범위를 읽습니다',BAD:'BAD의 근거와 조건을 대조합니다',CHECK:'확정하지 못한 조회를 확인합니다',SKIP:'생략 사유와 검사 조건을 확인합니다'};
-  return {title:action[result.status]||'구간과 주 RESULT부터 확인합니다',context:c.remedy,steps:[result.status?'원본 RESULT·상세 결과·행 번호와 조회 근거를 함께 읽습니다.':'지원 번호 머리글과 주 RESULT가 한 번씩인지 확인합니다.',result.status==='CHECK'||result.status==='SKIP'?'기록된 오류·파일 상태·사유를 확인합니다. 사유가 없으면 원인 미확인으로 둡니다.':'학습 화면의 교안 기준과 실제 코드의 조건을 나란히 대조합니다.',!result.evidence.length?'아래 조회로 실행 환경의 근거를 보충합니다. 근거가 없는 원인을 확정하지 않습니다.':'아래 조회의 입력·출력을 확인하고 누락된 속성은 별도로 검토합니다.','필요한 보완은 실습 환경의 관리자 검토 아래 진행한 뒤 같은 SH를 다시 실행하고 새 TXT를 비교합니다.'],command:c.command,note:'조회 예시입니다. 사이트는 실행하지 않습니다. 02~08의 원형 코드는 모든 파이프 오류를 별도 상태로 검출하지 않으므로 GOOD/BAD만으로 조회 성공도 보장하지 않습니다.'};
+  return {title:action[result.status]||'구간과 주 RESULT부터 확인합니다',context:c.remedy,steps:[result.status?'원본 RESULT·상세 결과·행 번호와 조회 근거를 함께 읽습니다.':'지원 번호 머리글과 주 RESULT가 한 번씩인지 확인합니다.',result.status==='CHECK'||result.status==='SKIP'?'기록된 오류·파일 상태·사유를 확인합니다. 사유가 없으면 원인 미확인으로 둡니다.':'학습 화면의 보안기준과 실제 코드의 조건을 나란히 대조합니다.',!result.evidence.length?'아래 조회로 실행 환경의 근거를 보충합니다. 근거가 없는 원인을 확정하지 않습니다.':'아래 조회의 입력·출력을 확인하고 누락된 속성은 별도로 검토합니다.','필요한 보완은 실습 환경의 관리자 검토 아래 진행한 뒤 같은 SH를 다시 실행하고 새 TXT를 비교합니다.'],command:c.command,note:'조회 예시입니다. 사이트는 실행하지 않습니다. 02~08의 원형 코드는 모든 파이프 오류를 별도 상태로 검출하지 않으므로 GOOD/BAD만으로 조회 성공도 보장하지 않습니다.'};
  }
  function sample(id,status){
   if(id==='01')return D.sample(status);
